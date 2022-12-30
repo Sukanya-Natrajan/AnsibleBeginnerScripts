@@ -1,0 +1,7 @@
+---
+- name: this playbook will install packages
+  hosts: all
+  become: true
+  roles:
+    - setup_apache
+

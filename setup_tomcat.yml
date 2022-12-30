@@ -1,0 +1,32 @@
+---
+- name: setup tomcat
+  hosts: all
+  become: true
+  tasks:
+  - name: install java on RedHat
+    yum:
+      name: java
+      state: installed
+    when: ansible_os_family == "RedHat"
+  - name: install java on Debian
+    apt:
+      name: default-jdk
+      state: present
+    when: ansible_os_family == "Debian"
+  - name: download tomcat packages
+    get_url:
+      url: https://dlcdn.apache.org/tomcat/tomcat-10/v10.0.27/bin/apache-tomcat-10.0.27.tar.gz
+      dest: /opt
+  - name: untar apache packages
+    unarchive:
+      src: /opt/apache-tomcat-10.0.27.tar.gz
+      dest: /opt
+      remote_src: yes
+  - name: give execution perssion to startup.sh file
+    file:
+      path: /opt/apache-tomcat-10.0.27/bin/startup.sh
+      mode: 0777
+  - name: start tomcat service
+    shell: nohup ./startup.sh
+    args:
+      chdir: /opt/apache-tomcat-10.0.27/bin/
